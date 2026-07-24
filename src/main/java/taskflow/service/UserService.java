@@ -1,9 +1,14 @@
 package taskflow.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import taskflow.entity.User;
 import taskflow.repository.UserRepository;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
@@ -16,5 +21,27 @@ public class UserService {
 
     public User createUser(User user){
         return userRepository.save(user);
+    }
+
+    public User updateUser(Long userId, User user){
+        Optional<User> optionalUser = userRepository.findById(userId);
+        User savedUser = optionalUser.orElseThrow(() -> new RuntimeException("user not found with id: "+userId));
+        return userRepository.save(user);
+    }
+
+    public List<User> getAllUsers(){
+        return userRepository.findAll();
+    }
+
+    public User getUser(Long userId){
+        Optional<User> savedUser = userRepository.findById(userId);
+        return savedUser.orElseThrow(() -> new RuntimeException("user not found with id: "+userId));
+    }
+
+    public ResponseEntity<User> deleteUser(Long userId){
+        Optional<User> optionalUser = userRepository.findById(userId);
+        User savedUser = optionalUser.orElseThrow(() -> new RuntimeException("user not found with id: "+userId));
+        userRepository.delete(savedUser);
+        return new ResponseEntity<User>(HttpStatus.OK);
     }
 }
