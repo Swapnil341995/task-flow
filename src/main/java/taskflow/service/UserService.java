@@ -14,12 +14,16 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
-    private final UserMapper userMapper;
 
     @Autowired
-    public UserService(UserRepository userRepository, UserMapper userMapper){
+    public UserService(UserRepository userRepository){
         this.userRepository = userRepository;
-        this.userMapper = userMapper;
+    }
+
+    private User findUser(Long userId){
+        return userRepository.findById(userId)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
     }
 
     public UserResponseDto createUser(UserRequestDto requestDto){
@@ -29,27 +33,24 @@ public class UserService {
     }
 
     public UserResponseDto updateUser(Long userId, UserRequestDto requestDto){
-        Optional<User> optionalUser = userRepository.findById(userId);
-        if(optionalUser.isEmpty()){
-            throw new RuntimeException("user not found with id: "+userId);
-        }
-        User savedUser = UserMapper.toEntity(requestDto);
-        User updatedUser = userRepository.save(savedUser);
-        return UserMapper.toResponse(updatedUser);
+        User existingUser = this.findUser(userId);
+        User updatedUser = UserMapper.updateUser(existingUser, requestDto);
+        User savedUser = userRepository.save(updatedUser);
+        return UserMapper.toResponse(savedUser);
     }
 
-    public List<User> getAllUsers(){
-        return userRepository.findAll();
+    public List<UserResponseDto> getAllUsers(){
+        List<User> users = userRepository.findAll();
+        return users.stream().map(UserMapper::toResponse).toList();
     }
 
-    public User getUser(Long userId){
-        Optional<User> savedUser = userRepository.findById(userId);
-        return savedUser.orElseThrow(() -> new RuntimeException("user not found with id: "+userId));
+    public UserResponseDto getUser(Long userId){
+        User user = this.findUser(userId);
+        return UserMapper.toResponse(user);
     }
 
     public void deleteUser(Long userId){
-        Optional<User> optionalUser = userRepository.findById(userId);
-        User savedUser = optionalUser.orElseThrow(() -> new RuntimeException("user not found with id: "+userId));
-        userRepository.delete(savedUser);
+        User existingUser = this.findUser(userId);
+        userRepository.delete(existingUser);
     }
 }

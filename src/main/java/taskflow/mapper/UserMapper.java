@@ -5,7 +5,6 @@ import taskflow.dto.UserRequestDto;
 import taskflow.dto.UserResponseDto;
 import taskflow.entity.User;
 
-@Component
 public class UserMapper {
     public static User toEntity(UserRequestDto dto){
         User user = new User();
@@ -21,5 +20,12 @@ public class UserMapper {
         responseDto.setName(user.getName());
         responseDto.setEmail(user.getEmail());
         return responseDto;
+    }
+
+    public static User updateUser(User existingUser, UserRequestDto dto){
+        existingUser.setEmail(dto.getEmail());
+        existingUser.setName(dto.getName());
+        existingUser.setPassword(dto.getPassword());
+        return existingUser;
     }
 }

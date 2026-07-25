@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import taskflow.dto.UserRequestDto;
 import taskflow.dto.UserResponseDto;
-import taskflow.entity.User;
 import taskflow.service.UserService;
 
 import java.util.List;
@@ -23,28 +22,29 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public UserResponseDto createUser(@Valid @RequestBody UserRequestDto dto){
-        return this.userService.createUser(dto);
+    public ResponseEntity<UserResponseDto> createUser(@Valid @RequestBody UserRequestDto requestDto){
+        UserResponseDto responseDto = this.userService.createUser(requestDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(responseDto);
     }
 
     @PutMapping("/users/{userId}")
-    public UserResponseDto updateUser(@PathVariable Long userId, @RequestBody UserRequestDto dto){
-        return this.userService.updateUser(userId, dto);
+    public UserResponseDto updateUser(@PathVariable Long userId,@Valid @RequestBody UserRequestDto requestDto){
+        return this.userService.updateUser(userId, requestDto);
     }
 
     @GetMapping("/users")
-    public List<User> getAllUsers(){
+    public List<UserResponseDto> getAllUsers(){
         return this.userService.getAllUsers();
     }
 
     @GetMapping("/users/{userId}")
-    public User getUser(@PathVariable Long userId){
+    public UserResponseDto getUser(@PathVariable Long userId){
         return this.userService.getUser(userId);
     }
 
     @DeleteMapping("/users/{userId}")
-    public ResponseEntity<User> deleteUser(@PathVariable Long userId){
+    public ResponseEntity<String> deleteUser(@PathVariable Long userId){
         this.userService.deleteUser(userId);
-        return new ResponseEntity<User>(HttpStatus.OK);
+        return ResponseEntity.status(HttpStatus.OK).body("user deleted successfully");
     }
 }
