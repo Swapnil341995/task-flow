@@ -1,6 +1,7 @@
 package taskflow.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import taskflow.entity.User;
@@ -40,6 +41,7 @@ public class UserController {
 
     @DeleteMapping("/users/{userId}")
     public ResponseEntity<User> deleteUser(@PathVariable Long userId){
-        return this.userService.deleteUser(userId);
+        this.userService.deleteUser(userId);
+        return new ResponseEntity<User>(HttpStatus.OK);
     }
 }

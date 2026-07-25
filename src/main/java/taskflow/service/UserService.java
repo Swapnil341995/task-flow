@@ -26,7 +26,10 @@ public class UserService {
     public User updateUser(Long userId, User user){
         Optional<User> optionalUser = userRepository.findById(userId);
         User savedUser = optionalUser.orElseThrow(() -> new RuntimeException("user not found with id: "+userId));
-        return userRepository.save(user);
+        savedUser.setName(user.getName());
+        savedUser.setEmail(user.getEmail());
+        savedUser.setPassword(user.getPassword());
+        return userRepository.save(savedUser);
     }
 
     public List<User> getAllUsers(){
@@ -38,10 +41,9 @@ public class UserService {
         return savedUser.orElseThrow(() -> new RuntimeException("user not found with id: "+userId));
     }
 
-    public ResponseEntity<User> deleteUser(Long userId){
+    public void deleteUser(Long userId){
         Optional<User> optionalUser = userRepository.findById(userId);
         User savedUser = optionalUser.orElseThrow(() -> new RuntimeException("user not found with id: "+userId));
         userRepository.delete(savedUser);
-        return new ResponseEntity<User>(HttpStatus.OK);
     }
 }
