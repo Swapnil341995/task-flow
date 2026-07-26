@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 import taskflow.dto.UserRequestDto;
 import taskflow.dto.UserResponseDto;
 import taskflow.entity.User;
+import taskflow.exception.ResourceNotFoundException;
 import taskflow.mapper.UserMapper;
 import taskflow.repository.UserRepository;
 
@@ -23,7 +24,7 @@ public class UserService {
     private User findUser(Long userId){
         return userRepository.findById(userId)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                        new ResourceNotFoundException("User not found with id "+userId));
     }
 
     public UserResponseDto createUser(UserRequestDto requestDto){
