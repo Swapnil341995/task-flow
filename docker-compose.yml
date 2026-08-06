@@ -6,32 +6,33 @@ services:
       - "8080:8080"
 
     depends_on:
-      mysql:
+      postgres:
         condition: service_healthy
 
     environment:
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/taskflow
-      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/taskflow
+      SPRING_DATASOURCE_USERNAME: postgres
       SPRING_DATASOURCE_PASSWORD: root
 
-  mysql:
-    image: mysql:8.4
+  postgres:
+    image: postgres:17
 
     ports:
-      - "3306:3306"
+      - "5432:5432"
 
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: taskflow
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: taskflow
 
     volumes:
-      - mysql-data:/var/lib/mysql
+      - postgres-data:/var/lib/postgresql/data
 
     healthcheck:
-      test: ["CMD","mysqladmin","ping","-h","localhost","-uroot","-proot"]
+      test: ["CMD-SHELL", "pg_isready -U postgres -d taskflow"]
       interval: 5s
       timeout: 5s
       retries: 10
 
 volumes:
-  mysql-data:
+  postgres-data:
